@@ -1,28 +1,45 @@
 import axios from "axios";
 import cheerio from "cheerio";
 
-const url = `https://books.toscrape.com/`;
+const url1 = `https://sonxeber.az`;
+const url2 = `https://apa.az/az`;
+const book_data = [];
 
 const getGenre = async () => {
   try {
-    const res = await axios.get(url);
-    const $ = cheerio.load(res.data);
+    let res = await axios.get(url2);
+    let $ = cheerio.load(res.data);
 
-    const books = $("article");
-    const book_data = [];
-
+    let books = $(".three_columns_block .item");
+    // console.log(books);
     books.each(function () {
-      let title = $(this).find("h3 a").text();
-      let price = $(this).find(".price_color").text();
-      let stock = $(this).find(".availability").text().trim();
+      let title = $(this).find("h2").text();
+      let img = $(this).find(".img img").attr("src");
+      let href = $(this).attr("href");
 
-      book_data.push({ title, price, stock });
+      book_data.push({ title, img: url2 + img, href });
     });
-
-    console.log(book_data);
   } catch (err) {
     console.log(err);
   }
+
+  try {
+    let res = await axios.get(url1);
+    let $ = cheerio.load(res.data);
+
+    let books = $(".nart");
+    // console.log(books);
+    books.each(function () {
+      let title = $(this).find("h3").text();
+      let img = $(this).find(".imgholder img").attr("src");
+      let href = $(this).find(".thumb_zoom").attr("href");
+
+      book_data.push({ title, img: url1 + img, href: url1 + href });
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  console.log(book_data);
 };
 
 getGenre();
