@@ -3,11 +3,12 @@ import axios from "axios";
 import cheerio from "cheerio";
 const router = express.Router();
 import request from "request";
+import { isOneOfTheElementsExists } from "../../helper/index.js";
 
 const url1 = `https://sonxeber.az`;
 const url2 = `https://apa.az/az`;
 
-router.get("/", (req, res, next) => {
+router.post("/", (req, res, next) => {
   let book_data = [];
   try {
     request(url2, (error, response, body) => {
@@ -21,7 +22,48 @@ router.get("/", (req, res, next) => {
           let href = $(this).attr("href");
           book_data.push({ title, img: img, href });
         });
-        res.status(200).json(book_data);
+        try {
+          request(url1, (error, response, body) => {
+            if (!error && response.statusCode === 200) {
+              let $ = cheerio.load(body);
+              let books = $(".nart");
+
+              books.each(function () {
+                let title = $(this).find("h3").text();
+                let img = $(this).find(".imgholder img").attr("src");
+                let href = $(this).find(".thumb_zoom").attr("href");
+                book_data.push({ title, img: url1 + img, href: url1 + href });
+              });
+              // if (req.query.tag) {
+              //   res
+              //     .status(200)
+              //     .json(
+              //       book_data.filter(
+              //         (item) =>
+              //           item.title
+              //             .toLowerCase()
+              //             .indexOf(req.query.tag.toLowerCase()) != -1
+              //       )
+              //     );
+              //
+              if (req.body.tags) {
+                console.log(req.body.tags);
+                res
+                  .status(200)
+                  .json(
+                    book_data.filter((item) =>
+                      isOneOfTheElementsExists(
+                        item.title.toLowerCase(),
+                        req.body.tags
+                      )
+                    )
+                  );
+              } else res.status(200).json(book_data);
+            }
+          });
+        } catch (err) {
+          console.log(err);
+        }
       }
     });
   } catch (err) {
