@@ -1,45 +1,44 @@
-import axios from "axios";
-import cheerio from "cheerio";
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
 
-const url1 = `https://sonxeber.az`;
-const url2 = `https://apa.az/az`;
-const book_data = [];
+import newsRouter from "./api/routes/news.js";
 
-const getGenre = async () => {
-  try {
-    let res = await axios.get(url2);
-    let $ = cheerio.load(res.data);
+const app = express();
 
-    let books = $(".three_columns_block .item");
-    // console.log(books);
-    books.each(function () {
-      let title = $(this).find("h2").text();
-      let img = $(this).find(".img img").attr("src");
-      let href = $(this).attr("href");
+app.use(cors());
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+app.use(bodyParser.json());
 
-      book_data.push({ title, img: url2 + img, href });
-    });
-  } catch (err) {
-    console.log(err);
+app.use((res, req, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+  if (req.method == "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "*");
+    return res.status(200).json({});
   }
+  next();
+});
 
-  try {
-    let res = await axios.get(url1);
-    let $ = cheerio.load(res.data);
+app.use("/news", newsRouter);
 
-    let books = $(".nart");
-    // console.log(books);
-    books.each(function () {
-      let title = $(this).find("h3").text();
-      let img = $(this).find(".imgholder img").attr("src");
-      let href = $(this).find(".thumb_zoom").attr("href");
+app.use((req, res, next) => {
+  const error = new Error("Not found.");
+  error.status = 404;
+  next(error);
+});
 
-      book_data.push({ title, img: url1 + img, href: url1 + href });
-    });
-  } catch (err) {
-    console.log(err);
-  }
-  console.log(book_data);
-};
+app.use((error, req, res, next) => {
+  res.status(error.status || 500);
+  res.json({
+    error: {
+      message: error.message,
+    },
+  });
+});
 
-getGenre();
+export default app;
