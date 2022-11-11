@@ -1,5 +1,5 @@
-import http from "http";
-import app from "./index.js";
+const http = require("http");
+const app = require("./index.js");
 
 const port = 1999;
 

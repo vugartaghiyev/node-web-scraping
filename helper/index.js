@@ -1,4 +1,4 @@
-export const isOneOfTheElementsExists = (str, arr) => {
+const isOneOfTheElementsExists = (str, arr) => {
   let isExists = false;
   for (let i = 0; i < arr.length; i++) {
     if (str.toLowerCase().indexOf(arr[i].toLowerCase()) === -1) {
@@ -11,3 +11,5 @@ export const isOneOfTheElementsExists = (str, arr) => {
 
   return isExists;
 };
+
+module.exports = isOneOfTheElementsExists;

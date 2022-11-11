@@ -1,8 +1,8 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
-import newsRouter from "./api/routes/news.js";
+const newsRouter = require("./api/routes/news.js");
 
 const app = express();
 
@@ -41,4 +41,4 @@ app.use((error, req, res, next) => {
   });
 });
 
-export default app;
+module.exports = app;

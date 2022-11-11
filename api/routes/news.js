@@ -1,9 +1,8 @@
-import express from "express";
-import axios from "axios";
-import cheerio from "cheerio";
+const express = require("express");
+const cheerio = require("cheerio");
 const router = express.Router();
-import request from "request";
-import { isOneOfTheElementsExists } from "../../helper/index.js";
+const request = require("request");
+const { isOneOfTheElementsExists } = require("../../helper/index.js");
 
 const url1 = `https://sonxeber.az`;
 const url2 = `https://apa.az/az`;
@@ -71,7 +70,7 @@ router.post("/", (req, res, next) => {
   }
 });
 
-export default router;
+module.exports = router;
 
 const getGenre = async () => {
   //     let res = await axios.get(url2);
