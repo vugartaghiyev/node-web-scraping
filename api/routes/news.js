@@ -2,10 +2,23 @@ const express = require("express");
 const cheerio = require("cheerio");
 const router = express.Router();
 const request = require("request");
-const { isOneOfTheElementsExists } = require("../../helper/index.js");
 
 const url1 = `https://sonxeber.az`;
 const url2 = `https://apa.az/az`;
+
+const isOneOfTheElementsExists = (str, arr) => {
+  let isExists = false;
+  for (let i = 0; i < arr.length; i++) {
+    if (str.toLowerCase().indexOf(arr[i].toLowerCase()) === -1) {
+      isExists = false;
+    } else {
+      isExists = true;
+      break;
+    }
+  }
+
+  return isExists;
+};
 
 router.post("/", (req, res, next) => {
   let book_data = [];
